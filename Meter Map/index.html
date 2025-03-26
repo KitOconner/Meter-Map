@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Meter Data</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+  <input type="text" id="meterNumberInput" placeholder="Enter meter number">
+  <button id="searchButton">Search</button>
+  <div id="data"></div>
+
+  <script>
+    // ดึงข้อมูลจากไฟล์ CSV
+    Papa.parse("meter_data.csv", {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const meterData = results.data;
+
+        // ฟังก์ชันสำหรับดึงข้อมูลโดยใช้เลขมิเตอร์
+        function getDataByMeterNumber(meterNumber) {
+          const result = meterData.find(item => item["เลขมิเตอร์"] === meterNumber);
+          if (result) {
+            displayData(result);
+          } else {
+            document.getElementById("data").innerHTML = "Data not found.";
+          }
+        }
+
+        // ฟังก์ชันสำหรับแสดงผลข้อมูล
+        function displayData(data) {
+          const dataDiv = document.getElementById("data");
+          dataDiv.innerHTML = `
+            <p>ชื่อผู้ใช้: ${data["ชื่อผู้ใช้"]}</p>
+            <p>เลขมิเตอร์: ${data["เลขมิเตอร์"]}</p>
+            <p>ชั้น: ${data["ชั้น"]}</p>
+            <p>ล้อค: ${data["ล้อค"]}</p>
+          `;
+        }
+
+        // เรียกใช้ฟังก์ชันเมื่อผู้ใช้กดปุ่มค้นหา
+        document.getElementById("searchButton").addEventListener("click", () => {
+          const meterNumber = document.getElementById("meterNumberInput").value;
+          getDataByMeterNumber(meterNumber);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
