@@ -1,50 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
-  <title>Meter Data</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหาข้อมูลจากเลขมิเตอร์</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-  <input type="text" id="meterNumberInput" placeholder="Enter meter number">
-  <button id="searchButton">Search</button>
-  <div id="data"></div>
+    <div class="container">
+        <h2>ค้นหาข้อมูลจากเลขมิเตอร์</h2>
+        <input type="text" id="searchInput" placeholder="กรอกเลขมิเตอร์">
+        <button onclick="searchData()">ค้นหา</button>
+        <table id="resultTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>ชื่อผู้ใช้</th>
+                    <th>เลขมิเตอร์</th>
+                    <th>ชั้น</th>
+                    <th>ล็อก</th>
+                </tr>
+            </thead>
+            <tbody id="resultBody"></tbody>
+        </table>
+    </div>
 
-  <script>
-    // ดึงข้อมูลจากไฟล์ CSV
-    Papa.parse("meter_data.csv", {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const meterData = results.data;
+    <script>
+        const data = [
+            { name: "จรินทร์ ระพีอมล", meter: "27650475", floor: "1", lock: "A" },
+            { name: "นาย อำนาจ รัตนวิจัย", meter: "27650476", floor: "1", lock: "B" },
+            { name: "แปลา ชายกล้า", meter: "27650477", floor: "1", lock: "C" },
+            { name: "วิสุทธิ์ แก้วสนาม", meter: "27650478", floor: "1", lock: "D" },
+            { name: "ประกอบ ดุจารักษ์", meter: "27650479", floor: "1", lock: "E" },
+            { name: "คิม มานะไว", meter: "27650481", floor: "1", lock: "F" },
+            { name: "อาหมวย พรหมรักษา", meter: "27650482", floor: "1", lock: "G" },
+            { name: "มาลิสา สะอิ", meter: "27650483", floor: "1", lock: "H" },
+            { name: "โสภา หลานหลาย", meter: "27650484", floor: "1", lock: "I" },
+            { name: "อารยา เทวารักษ์", meter: "27650485", floor: "1", lock: "J" },
+            { name: "อารยา ใต้สะกานต์", meter: "27650486", floor: "2", lock: "A" },
+            { name: "นาง เยี่ยม แสง", meter: "27650487", floor: "2", lock: "B" },
+            { name: "สุจิน บุตรสอาด", meter: "27650488", floor: "2", lock: "C" },
+            { name: "วิริยบัญชา สุขพัฒน์", meter: "27650489", floor: "2", lock: "D" },
+            { name: "สมาน ไพรศาลสถาน", meter: "27650491", floor: "2", lock: "E" },
+            { name: "กุหลาบ ธาตา", meter: "27650492", floor: "2", lock: "F" },
+            { name: "อภิภัทร์ทิพย์ บุญผล", meter: "27650493", floor: "2", lock: "G" },
+            { name: "สาวิตรี ทองสังข์", meter: "27650494", floor: "2", lock: "H" },
+            { name: "ไพรัตน์ บุญชนะ", meter: "27650495", floor: "2", lock: "I" },
+            { name: "ประกาศศ์ สงคลิน", meter: "27650496", floor: "2", lock: "J" }
+        ];
 
-        // ฟังก์ชันสำหรับดึงข้อมูลโดยใช้เลขมิเตอร์
-        function getDataByMeterNumber(meterNumber) {
-          const result = meterData.find(item => item["เลขมิเตอร์"] === meterNumber);
-          if (result) {
-            displayData(result);
-          } else {
-            document.getElementById("data").innerHTML = "Data not found.";
-          }
+        function searchData() {
+            const searchValue = document.getElementById("searchInput").value.trim();
+            const resultBody = document.getElementById("resultBody");
+            const resultTable = document.getElementById("resultTable");
+            resultBody.innerHTML = "";
+            const foundData = data.find(item => item.meter === searchValue);
+            if (foundData) {
+                resultBody.innerHTML = `
+                    <tr>
+                        <td>${foundData.name}</td>
+                        <td>${foundData.meter}</td>
+                        <td>${foundData.floor}</td>
+                        <td>${foundData.lock}</td>
+                    </tr>
+                `;
+                resultTable.style.display = "table";
+            } else {
+                alert("ไม่พบข้อมูล");
+                resultTable.style.display = "none";
+            }
         }
-
-        // ฟังก์ชันสำหรับแสดงผลข้อมูล
-        function displayData(data) {
-          const dataDiv = document.getElementById("data");
-          dataDiv.innerHTML = `
-            <p>ชื่อผู้ใช้: ${data["ชื่อผู้ใช้"]}</p>
-            <p>เลขมิเตอร์: ${data["เลขมิเตอร์"]}</p>
-            <p>ชั้น: ${data["ชั้น"]}</p>
-            <p>ล้อค: ${data["ล้อค"]}</p>
-          `;
-        }
-
-        // เรียกใช้ฟังก์ชันเมื่อผู้ใช้กดปุ่มค้นหา
-        document.getElementById("searchButton").addEventListener("click", () => {
-          const meterNumber = document.getElementById("meterNumberInput").value;
-          getDataByMeterNumber(meterNumber);
-        });
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>
